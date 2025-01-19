@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Heart,
@@ -9,6 +10,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const sidebarItems = [
   { label: "Home", icon: <Home /> },
@@ -20,8 +23,8 @@ const sidebarItems = [
   {
     label: "Profile",
     icon: (
-      <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="shadcn"/>
+      <Avatar className="w-6 h-6">
+        <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     ),
@@ -30,16 +33,48 @@ const sidebarItems = [
 ];
 
 const LeftSidebar = () => {
+  const navigate = useNavigate();
+
+  const logoutHandler = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/v1/user/logout", {
+        withCredentials: true,
+      });
+      if(res.data.success){
+        navigate("/login");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const sidebarHandler = (textType) => {
+    if(textType === "Logout") logoutHandler();
+  }
   return (
-    <div className>
-      {sidebarItems.map((item, index) => {
-        return (
-          <div key={index}>
-            {item.icon}
-            <span>{item.label}</span>
-          </div>
-        );
-      })}
+    <div className="fixed top-0 left-0 z-10 px-4 border-r border-gray-800 w-[16%] h-screen">
+      <div className="flex flex-col">
+        <div className="mb-8 mt-1">
+          <h1 className="p-3 text-xl font-extrabold text-gray-900 border-b border-gray-800 font-comfortaa">
+            ChitChat
+          </h1>
+        </div>
+        <div>
+          {sidebarItems.map((item, index) => {
+            return (
+              <div
+                onClick={() => sidebarHandler(item.label)}
+                key={index}
+                className="flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-2"
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
