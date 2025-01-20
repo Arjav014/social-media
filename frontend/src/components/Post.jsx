@@ -14,19 +14,19 @@ import { Bookmark, MessageCircle, Send } from "lucide-react";
 import CommentDialog from "./CommentDialog";
 
 const Post = () => {
-    const [text, setText] = useState("");
-    const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
 
-    const changeEventHandler = (e) => {
-        const inputText = e.target.value;
-        if(inputText.trim()){
-            setText(inputText);
-        } else {
-            setText("");
-        }
+  const changeEventHandler = (e) => {
+    const inputText = e.target.value;
+    if (inputText.trim()) {
+      setText(inputText);
+    } else {
+      setText("");
     }
+  };
   return (
-    <div className="my-8 w-full max-w-md mx-auto">
+    <div className="my-6 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar>
@@ -41,7 +41,10 @@ const Post = () => {
               <NavigationMenuTrigger />
               <NavigationMenuContent>
                 <NavigationMenuLink>
-                  <Button variant="ghost" className="cursor-pointer w-fit m-1 text-red-500">
+                  <Button
+                    variant="ghost"
+                    className="cursor-pointer w-fit m-1 text-red-500"
+                  >
                     Unfollow
                   </Button>
                 </NavigationMenuLink>
@@ -66,7 +69,10 @@ const Post = () => {
             size={"23px"}
             className="cursor-pointer hover:text-gray-600"
           />
-          <MessageCircle onClick={() => setOpen(true)} className="cursor-pointer hover:text-gray-600" />
+          <MessageCircle
+            onClick={() => setOpen(true)}
+            className="cursor-pointer hover:text-gray-600"
+          />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
         <Bookmark className="cursor-pointer hover:text-gray-600" />
@@ -76,19 +82,22 @@ const Post = () => {
         <span className="font-semibold mr-1">username</span>
         caption
       </p>
-      <span onClick={() => setOpen(true)} className="cursor-pointer text-sm text-gray-400">View all 10 comments...</span>
-      <CommentDialog open={open} setOpen={setOpen}/>
+      <span
+        onClick={() => setOpen(true)}
+        className="cursor-pointer text-sm text-gray-400"
+      >
+        View all 10 comments...
+      </span>
+      <CommentDialog open={open} setOpen={setOpen} />
       <div className="flex items-center justify-between">
         <input
           type="text"
           placeholder="Add a comment..."
-          value = {text}
+          value={text}
           onChange={changeEventHandler}
           className="outline-none text-sm w-full"
         />
-        {
-            text && <span className="text-blue-600">post</span>
-        }
+        {text && <span className="text-blue-600">post</span>}
       </div>
     </div>
   );
