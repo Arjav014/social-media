@@ -123,7 +123,7 @@ export const login = async (req,res) => {
         return res.status(200).json({
             message: `Welcome back, ${user.username}`,
             success: true,
-            data: user
+            user
         });
     } catch (error) {
         console.error("Error during login:", error);
