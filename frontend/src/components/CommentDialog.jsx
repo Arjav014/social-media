@@ -29,9 +29,9 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
-  const sendMessageHandler = async() => {
+  const sendMessageHandler = async () => {
     alert(text);
-  }
+  };
 
   return (
     <Dialog open={open}>
@@ -107,7 +107,13 @@ const CommentDialog = ({ open, setOpen }) => {
                   onChange={changeEventHandler}
                   className="w-full outline-none border border-gray-300 p-2 rounded"
                 />
-            <Button disabled={!text.trim()} onClick={sendMessageHandler} variant="outline">Send</Button>
+                <Button
+                  disabled={!text.trim()}
+                  onClick={sendMessageHandler}
+                  variant="outline"
+                >
+                  Send
+                </Button>
               </div>
             </div>
           </div>

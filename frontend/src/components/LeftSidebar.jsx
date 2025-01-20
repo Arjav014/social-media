@@ -12,35 +12,21 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
-const sidebarItems = [
-  { label: "Home", icon: <Home /> },
-  { label: "Search", icon: <Search /> },
-  { label: "Explore", icon: <TrendingUp /> },
-  { label: "Message", icon: <MessagesSquare /> },
-  { label: "Notifications", icon: <Heart /> },
-  { label: "Create", icon: <PlusSquare /> },
-  {
-    label: "Profile",
-    icon: (
-      <Avatar className="w-6 h-6">
-        <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-    ),
-  },
-  { label: "Logout", icon: <LogOut /> },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
+  const { user } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
 
   const logoutHandler = async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/v1/user/logout", {
         withCredentials: true,
       });
-      if(res.data.success){
+      if (res.data.success) {
+        dispatch(setAuthUser(null));
         navigate("/login");
         toast.success(res.data.message);
       }
@@ -50,8 +36,28 @@ const LeftSidebar = () => {
   };
 
   const sidebarHandler = (textType) => {
-    if(textType === "Logout") logoutHandler();
-  }
+    if (textType === "Logout") logoutHandler();
+  };
+
+  const sidebarItems = [
+    { label: "Home", icon: <Home /> },
+    { label: "Search", icon: <Search /> },
+    { label: "Explore", icon: <TrendingUp /> },
+    { label: "Message", icon: <MessagesSquare /> },
+    { label: "Notifications", icon: <Heart /> },
+    { label: "Create", icon: <PlusSquare /> },
+    {
+      label: "Profile",
+      icon: (
+        <Avatar className="w-6 h-6">
+          <AvatarImage src={user?.profilePicture} alt="shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+      ),
+    },
+    { label: "Logout", icon: <LogOut /> },
+  ];
+
   return (
     <div className="fixed top-0 left-0 z-10 px-4 border-r border-gray-800 w-[16%] h-screen">
       <div className="flex flex-col">
