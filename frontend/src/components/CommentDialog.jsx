@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,23 @@ import {
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 import { Button } from "./ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import Comment from "./Comment";
+import axios from "axios";
+import { toast } from "sonner";
+import { setPosts } from "@/redux/postSlice";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
+  const { selectedPost, posts } = useSelector((store) => store.post);
+  const [comment, setComment] = useState(selectedPost?.comments);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    if(selectedPost){
+      setComment(selectedPost.comments);
+    }
+  },[selectedPost])
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -30,7 +44,34 @@ const CommentDialog = ({ open, setOpen }) => {
   };
 
   const sendMessageHandler = async () => {
-    alert(text);
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/api/v1/post/${selectedPost?._id}/comment`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        const updatedCommentData = [...comment, res.data.comment];
+        setComment(updatedCommentData);
+
+        const updatedPostData = posts.map((p) =>
+          p._id === selectedPost?._id
+            ? { ...p, comments: updatedCommentData }
+            : p
+        );
+
+        dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message);
+        setText("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -48,7 +89,7 @@ const CommentDialog = ({ open, setOpen }) => {
           <div className="w-1/2">
             <img
               className="rounded-l-lg w-full h-full object-cover"
-              src="https://img.freepik.com/free-vector/pair-programming-concept-illustration_114360-1812.jpg?ga=GA1.1.757731979.1724187216&semt=ais_hybrid"
+              src={selectedPost?.image}
               alt="post"
             />
           </div>
@@ -58,14 +99,16 @@ const CommentDialog = ({ open, setOpen }) => {
                 <Link>
                   <Avatar>
                     <AvatarImage
-                      src="https://github.com/shadcn.png"
+                      src={selectedPost?.author?.profilePicture}
                       alt="shadcn"
                     />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div>
-                  <Link className="font-medium text-lg">username</Link>
+                  <Link className="font-medium text-lg">
+                    {selectedPost?.author?.username}
+                  </Link>
                 </div>
               </div>
               <NavigationMenu>
@@ -96,7 +139,9 @@ const CommentDialog = ({ open, setOpen }) => {
             </div>
             <hr className="border-t border-gray-300" />
             <div className="flex-1 overflow-y-auto max-h-96 p-4">
-              comments ayenge
+              {comment.map((comment) => (
+                <Comment key={comment._id} comment={comment} />
+              ))}
             </div>
             <div className="p-4">
               <div className="flex items-center gap-2">
