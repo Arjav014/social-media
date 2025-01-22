@@ -13,7 +13,7 @@ import {
 import { Bookmark, MessageCircle, Send } from "lucide-react";
 import CommentDialog from "./CommentDialog";
 
-const Post = () => {
+const Post = ({ post }) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -30,10 +30,10 @@ const Post = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src="" alt="post_image" />
+            <AvatarImage src={post.author?.profilePicture} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1>username</h1>
+          <h1>{post.author?.username}</h1>
         </div>
         <NavigationMenu>
           <NavigationMenuList>
@@ -60,7 +60,7 @@ const Post = () => {
       </div>
       <img
         className="rounded-sm my-2 w-full aspesct-square object-cover"
-        src="https://img.freepik.com/free-vector/pair-programming-concept-illustration_114360-1812.jpg?ga=GA1.1.757731979.1724187216&semt=ais_hybrid"
+        src={post.image}
         alt="post"
       />
       <div className="flex items-center justify-between">
@@ -77,10 +77,10 @@ const Post = () => {
         </div>
         <Bookmark className="cursor-pointer hover:text-gray-600" />
       </div>
-      <span className="font-medium block my-2">1000 likes</span>
+      <span className="font-medium block my-2">{post.likes.length} likes</span>
       <p>
-        <span className="font-semibold mr-1">username</span>
-        caption
+        <span className="font-semibold mr-2">{post.author?.username}</span>
+        {post.caption}
       </p>
       <span
         onClick={() => setOpen(true)}
