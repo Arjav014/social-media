@@ -158,6 +158,13 @@ export const getProfile = async (req,res) => {
 
         // Find user by id, excluding the password
         let user = await User.findById(userId).select("-password");
+
+        await user.populate({
+            path: "posts",
+            createdAt: -1
+        })
+
+        await user.populate('bookmarks');
         
         // check if user exists or not
         if(!user) {
