@@ -19,7 +19,7 @@ const RightSidebar = () => {
           <h1 className="font-medium text-sm">
             <Link to={`/profile/${user?._id}`}>{user?.username}</Link>
           </h1>
-          <span className="text-gray-500 text-sm">
+          <span className="text-gray-500 max-w-24 text-sm whitespace-nowrap overflow-hidden text-ellipsis block">
             {user?.bio || "Bio here..."}
           </span>
         </div>
