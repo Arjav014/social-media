@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -6,40 +6,46 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Signup = () => {
   const [input, setInput] = useState({
-    username:"",
-    email:"",
-    password:""
-  })
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const {user} = useSelector((store) => store.auth);
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
-    setInput({...input, [e.target.name]:e.target.value});
-  }
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
 
   const signUpHandler = async (e) => {
     e.preventDefault();
     console.log(input);
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:3000/api/v1/user/register",input,{
-        headers:{
-          "Content-Type": "application/json"
-        },
-        withCredentials:true
-      });
-      if(res.data.success){
+      const res = await axios.post(
+        "http://localhost:3000/api/v1/user/register",
+        input,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
         navigate("/login");
         toast.success(res.data.message);
         setInput({
-          username:"",
-          email:"",
-          password:""
-        })
+          username: "",
+          email: "",
+          password: "",
+        });
       }
     } catch (error) {
       console.log(error);
@@ -47,13 +53,23 @@ const Signup = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
+
   return (
     <div className="flex items-center w-screen h-screen justify-center">
-      <form onSubmit={signUpHandler} className="shadow-lg flex flex-col gap-4 p-8 ">
+      <form
+        onSubmit={signUpHandler}
+        className="shadow-lg flex flex-col gap-4 p-8 "
+      >
         <div>
           <div className="flex justify-center items-center">
-            <img src="Logo.svg" alt="" className="w-8 h-8"/>
+            <img src="Logo.svg" alt="" className="w-8 h-8" />
             <h1 className="font-bold text-xl mb-1">Chitchat</h1>
           </div>
           <p className="text-sm text-center">
@@ -90,17 +106,20 @@ const Signup = () => {
             className="focus-visible:ring-transparent mt-1"
           />
         </div>
-        {
-          loading ? (
-            <Button>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-              Please wait
-            </Button>
-          ) : (
-            <Button type="submit">Signup</Button>
-          )
-        }
-        <span className="text-center">Already have an account? <Link to="/login" className="text-blue-600 font-medium">Login</Link></span>
+        {loading ? (
+          <Button>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Please wait
+          </Button>
+        ) : (
+          <Button type="submit">Signup</Button>
+        )}
+        <span className="text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 font-medium">
+            Login
+          </Link>
+        </span>
       </form>
     </div>
   );

@@ -21,7 +21,7 @@ import { Badge } from "./ui/badge";
 const Post = ({ post }) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
-  const { user } = useSelector((store) => store.auth);
+  const { user, userProfile } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [postLike, setPostLike] = useState(post.likes.length);
@@ -116,6 +116,21 @@ const Post = ({ post }) => {
     }
   };
 
+  const bookmarkHandler = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/v1/post/${post?._id}/bookmark`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="my-6 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
@@ -126,7 +141,9 @@ const Post = ({ post }) => {
           </Avatar>
           <div className="flex items-center gap-3">
             <h1>{post.author?.username}</h1>
-            {user._id === post.author._id && <Badge variant="secondary" >Author</Badge>}
+            {user._id === post.author._id && (
+              <Badge variant="secondary">Author</Badge>
+            )}
           </div>
         </div>
         <NavigationMenu>
@@ -135,12 +152,14 @@ const Post = ({ post }) => {
               <NavigationMenuTrigger />
               <NavigationMenuContent>
                 <NavigationMenuLink>
-                  <Button
-                    variant="ghost"
-                    className="cursor-pointer w-fit m-1 text-red-500"
-                  >
-                    Unfollow
-                  </Button>
+                  {post?.author._id !== user?._id && (
+                    <Button
+                      variant="ghost"
+                      className="cursor-pointer w-fit m-1 text-red-500"
+                    >
+                      Unfollow
+                    </Button>
+                  )}
                 </NavigationMenuLink>
                 <NavigationMenuLink>
                   <Button variant="ghost" className="cursor-pointer w-fit m-1">
@@ -192,7 +211,10 @@ const Post = ({ post }) => {
           />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark className="cursor-pointer hover:text-gray-600" />
+        <Bookmark
+          onClick={() => bookmarkHandler()}
+          className="cursor-pointer hover:text-gray-600"
+        />
       </div>
       <span className="font-medium block my-2">{post.likes.length} likes</span>
       <p>
