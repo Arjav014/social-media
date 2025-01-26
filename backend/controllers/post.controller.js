@@ -3,7 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import { Comment } from "../models/comment.model.js";
-import { getReceiverSocketId } from "../socket/socket.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const addNewPost = async (req, res) => {
   try {
@@ -141,7 +141,9 @@ export const likePost = async (req, res) => {
         message: "Your post was liked",
       };
       const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-      io.to(postOwnerSocketId).emit("notification", notification);
+      if(postOwnerSocketId){
+        io.to(postOwnerSocketId).emit("notification", notification);
+      }
     }
 
     return res.status(200).json({ message: "Post liked", success: true });
@@ -181,10 +183,12 @@ export const dislikePost = async (req, res) => {
         userId: likeKrneWala,
         userDetails: user,
         postId,
-        message: "Your post was liked",
+        message: "Your post was disliked",
       };
       const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-      io.to(postOwnerSocketId).emit("notification", notification);
+      if(postOwnerSocketId){
+        io.to(postOwnerSocketId).emit("notification", notification);
+      }
     }
 
     return res.status(200).json({ message: "Post disliked", success: true });
